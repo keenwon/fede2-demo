@@ -5,7 +5,6 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     stylish = require('jshint-stylish'),
     minifyCss = require('gulp-minify-css'),
-    uglify = require('gulp-uglify'),
     copy = require('gulp-copy'),
     shell = require('gulp-shell'),
     del = require('del'),
@@ -27,7 +26,7 @@ gulp.task('jshint', function () {
 gulp.task('css', ['clean'], function () {
     return gulp.src('dev/css/**/*.css')
         .pipe(minifyCss())
-        .pipe(rename('normal.min.css'))
+        .pipe(rename('index.min.css'))
         .pipe(gulp.dest('dist/css'));
 });
 
@@ -50,12 +49,12 @@ gulp.task("webpack", ['clean'], function (callback) {
         webpackConfig = [webpackConfig];
     }
 
-    for (var i = 0, j = webpackConfig.length; i < j; i++) {
-        webpackConfig[i].bail = true;
-        webpackConfig[i].plugins = [
+    webpackConfig.forEach(function (currentValue, i, array) {
+        array[i].bail = true;
+        array[i].plugins = [
             new webpack.optimize.UglifyJsPlugin()
         ];
-    }
+    });
 
     webpack(webpackConfig, function (err, stats) {
         if (err) {
